@@ -1,0 +1,90 @@
+<Prefab>
+  <Constants>
+    <Constant Name="Search.Popup.MarginLeft" Value="221" />
+    <Constant Name="Search.Popup.MarginRight" Value="221" />
+    <Constant Name="Search.Popup.MarginBottom" Value="83" />
+    <Constant Name="Search.Popup.MarginTop" Value="33" />
+    <!--Sycned with other Encyclopedia Pages-->
+
+    <Constant Name="SearchResult.Popup.MarginRight" Additive="-5" Value="!Search.Popup.MarginRight" />
+
+    <Constant Name="Search.TextField.Height" Value="40" />
+    <Constant Name="Search.TextField.MarginTop" Additive="!Search.TextField.Height" Value="!Search.Popup.MarginTop" />
+
+    <Constant Name="Encyclopedia.Frame.Width" BrushLayer="Default" BrushName="Encyclopedia.Frame" BrushValueType="Width" />
+    <Constant Name="Encyclopedia.Frame.Height" BrushLayer="Default" BrushName="Encyclopedia.Frame" BrushValueType="Height" />
+
+    <Constant Name="DoneButton.Margin.Top" Additive="-10" Value="!Encyclopedia.Frame.Height" />
+
+    <Constant Name="Popup.CloseButton.Width" BrushLayer="Default" BrushName="Popup.CloseButton" BrushValueType="Width" />
+    <Constant Name="Popup.CloseButton.Height" BrushLayer="Default" BrushName="Popup.CloseButton" BrushValueType="Height" />
+
+    <Constant Name="InnerPanel.LeftRight.Padding" Value="80" />
+
+    <Constant Name="SpectateButton.Width" BrushLayer="Default" BrushName="WideButton.Flat" BrushValueType="Width" />
+    <Constant Name="SpectateButton.Height" BrushLayer="Default" BrushName="WideButton.Flat" BrushValueType="Height" />
+
+    <Constant Name="RefreshButton.Width" Value="80" />
+    <Constant Name="RefreshButton.Height" Value="80" />
+
+    <Constant Name="CloseButton.Width" Value="80"/>
+    <Constant Name="CloseButton.Height" Value="80"/>
+    <Constant Name="SiegeMachines.HorizontalPadding" Value="3"/>
+    <Constant Name="SiegeMachines.VerticalPadding" Value="5"/>
+    <Constant Name="SiegeMachines.MarginRight" Value="65"/>
+  </Constants>
+
+  <VisualDefinitions>
+    <VisualDefinition Name="LeftMenu" EaseIn="true" TransitionDuration="0.45">
+      <VisualState PositionXOffset="0" State="Default" />
+    </VisualDefinition>
+    <VisualDefinition Name="RightMenu" EaseIn="true" TransitionDuration="0.45">
+      <VisualState PositionXOffset="0" State="Default" />
+    </VisualDefinition>
+    <VisualDefinition Name="CenterMenu" EaseIn="true" TransitionDuration="0.45">
+      <VisualState PositionYOffset="0" State="Default" />
+    </VisualDefinition>
+  </VisualDefinitions>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+      <Children>
+        <Standard.Background />
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+              <Children>
+			    <Widget VisualDefinition="CenterMenu" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" VerticalAlignment="Top" PositionYOffset="505" Brush="CustomBattle.CenterPanel">
+                  <Children>
+                    <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" MarginBottom="10" VerticalAlignment="Bottom">
+                      <Children>
+
+                        <ButtonWidget DoNotPassEventsToChildren="true" SuggestedWidth="!SpectateButton.Width" SuggestedHeight="!SpectateButton.Height" HorizontalAlignment="Center" VerticalAlignment="Bottom" Brush="WideButton.Flat" Command.Click="ExecuteStart" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="MPTeamSelection.SpectateButton.Text" Text="@StartButtonText" >
+                              <Children>
+                                <InputKeyVisualWidget DataSource="{StartInputKey}" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="60" SuggestedHeight="60" HorizontalAlignment="Center" VerticalAlignment="Center" PositionXOffset="-50" KeyID="@KeyID" IsVisible="@IsVisible"/>
+                              </Children>
+                            </TextWidget>
+                          </Children>
+                        </ButtonWidget>
+
+                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteBack" SuggestedWidth="!CloseButton.Width" SuggestedHeight="!CloseButton.Height" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginLeft="40" Brush="CloseButton.Flat">
+                          <Children>
+                            <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="25" VerticalAlignment="Top" PositionYOffset="-25" HorizontalAlignment="Center" Brush="MPLobby.Matchmaking.CircleButtonText" Text="@BackButtonText" />
+                          </Children>
+                        </ButtonWidget>
+
+                      </Children>
+                    </ListPanel>
+
+                  </Children>
+                </Widget>
+
+              </Children>
+            </Widget>
+          </Children>
+        </ListPanel>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Items>
+  <CraftedItem id="xyz_wooden_sword_t1" name="{=1HWRwbwT}Wooden Sword" is_merchandise="false" crafting_template="OneHandedSword" has_modifier="false">
+	<Pieces>
+	  <Piece id="wood_blade_1" Type="Blade" scale_factor="110" />
+	  <Piece id="wood_guard_1" Type="Guard" />
+	  <Piece id="wood_grip_1" Type="Handle" scale_factor="110" />
+	  <Piece id="wood_pommel_1" Type="Pommel" />
+	</Pieces>
+  </CraftedItem>
+  
+  <CraftedItem id="xyz_wooden_2hsword_t1" name="{=bt0uFefo}Wooden Twohander" is_merchandise="false" crafting_template="TwoHandedSword" has_modifier="false">
+    <Pieces>
+      <Piece id="wood_blade_1" Type="Blade" scale_factor="105" />
+      <Piece id="wood_guard_1" Type="Guard" />
+      <Piece id="wood_grip_2" Type="Handle" />
+      <Piece id="wood_pommel_1" Type="Pommel" />
+    </Pieces>
+  </CraftedItem>
+</Items>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<CraftingPieces>
+  <!-- #region Sword Pieces -->
+  <!-- #region Used Sword Blade Pieces -->
+  <CraftingPiece id="wood_blade_12" name="{=p2xjr5Bp}Wooden Blade" tier="1" piece_type="Blade" mesh="wood_blade_1" culture="Culture.empire" length="86.9" weight="0.4" CraftingCost="75">
+    <PieceUsages unavailable_usages="" />
+    <BladeData stack_amount="3" physics_material="wood_weapon" body_name="bo_sword_one_handed">
+      <Thrust damage_type="Blunt" damage_factor="0.1" />
+      <Swing damage_type="Blunt" damage_factor="0.1" />
+    </BladeData>
+    <Flags>
+      <Flag name="NoBlood" />
+    </Flags>
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  
+ </CraftingPieces>

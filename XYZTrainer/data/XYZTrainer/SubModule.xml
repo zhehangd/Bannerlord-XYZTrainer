@@ -1,0 +1,58 @@
+﻿<Module>
+
+<Name value="XYZ Trainer"/>
+<Id value="XYZTrainer"/>
+<Version value="v0.1.0"/>
+<SingleplayerModule value="true"/>
+<MultiplayerModule value="false"/>
+<Official value="false" />
+<DependedModules>
+  <DependedModule Id="Native" DependentVersion="e1.5.7" />
+  <DependedModule Id="SandBoxCore" DependentVersion="e1.5.7" />
+  <DependedModule Id="Sandbox" DependentVersion="e1.5.7" />
+  <DependedModule Id="CustomBattle" DependentVersion="e1.5.7" />
+  <DependedModule Id="StoryMode" DependentVersion="e1.5.7" />
+</DependedModules>
+
+<SubModules>
+  <SubModule>
+    <Name value="XYZTrainerModule"/>
+    <DLLName value="XYZTrainer.dll"/>
+    <SubModuleClassType value="XYZTrainer.XYZTrainerModule"/>
+    <Tags>
+      <Tag key="DedicatedServerType" value="none" />
+      <Tag key="IsNoRenderModeElement" value="false" />
+    </Tags>
+  </SubModule>
+</SubModules>
+    
+<Xmls>
+  <XmlNode>                
+  <XmlName id="NPCCharacters" path="tutorial_npc_advanced_melee"/>
+  <IncludedGameTypes>
+    <GameType value = "Campaign"/>
+    <GameType value = "CampaignStoryMode"/>
+    <GameType value = "CustomGame"/>
+  </IncludedGameTypes>
+  </XmlNode>  
+  
+  <XmlNode>                
+  <XmlName id="CraftingPieces" path="crafting_pieces"/>
+  <IncludedGameTypes>
+    <GameType value = "Campaign"/>
+    <GameType value = "CampaignStoryMode"/>
+    <GameType value = "CustomGame"/>
+  </IncludedGameTypes>
+  </XmlNode>  
+  
+  <XmlNode>                
+  <XmlName id="Items" path="items"/>
+  <IncludedGameTypes>
+    <GameType value = "Campaign"/>
+    <GameType value = "CampaignStoryMode"/>
+    <GameType value = "CustomGame"/>
+  </IncludedGameTypes>
+  </XmlNode>  
+</Xmls>
+
+</Module>
