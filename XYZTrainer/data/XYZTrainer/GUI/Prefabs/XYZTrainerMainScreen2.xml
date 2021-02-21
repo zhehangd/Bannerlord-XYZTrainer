@@ -69,7 +69,7 @@
                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="25" MarginRight="25" LayoutImp.LayoutMethod="VerticalBottomToTop">
                   <Children>
 
-                    <GridWidget DataSource="{Cultures}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" DefaultCellWidth="188" DefaultCellHeight="370" ColumnCount="3" HorizontalAlignment="Center" >
+                    <GridWidget DataSource="{Projects}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" DefaultCellWidth="188" DefaultCellHeight="370" ColumnCount="3" HorizontalAlignment="Center" >
                       <ItemTemplate>
 
                         <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Command.Click="ExecuteSelectCulture" IsSelected="@IsSelected" UpdateChildrenStates="true" Brush="CharacterCreation.Culture.Banner.SoundBrush" DoNotUseCustomScaleAndChildren="true">

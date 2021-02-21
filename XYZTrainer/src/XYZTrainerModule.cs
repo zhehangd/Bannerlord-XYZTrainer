@@ -10,8 +10,8 @@ namespace XYZTrainer
         {
             base.OnSubModuleLoad();
             Module.CurrentModule.AddInitialStateOption
-                (new InitialStateOption("XYZTrainingField",
-                new TextObject("XYZ Training Field"), 3,
+                (new InitialStateOption("XYZTrainingFields",
+                new TextObject("XYZ Training Fields"), 3,
                 () => {MBGameManager.StartNewGame(new XYZTrainerGameManager());}, false));
         }
     }
