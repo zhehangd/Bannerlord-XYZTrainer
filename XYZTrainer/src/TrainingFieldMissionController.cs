@@ -53,7 +53,7 @@ namespace XYZTrainer
             matrixFrame.origin = new Vec3(324.665f, 391.142f, 8.480f);
             matrixFrame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
 
-            BasicCharacterObject playerCharacter = Game.Current.ObjectManager.GetObject<BasicCharacterObject>("xyz_tutorial_npc_advanced_melee_easy");
+            BasicCharacterObject playerCharacter = Game.Current.ObjectManager.GetObject<BasicCharacterObject>("xyz_eox");
 
             //.MountKey(MountCreationKey.GetRandomMountKey(playerCharacter.Equipment[EquipmentIndex.ArmorItemEndSlot].Item, playerCharacter.GetMountKeySeed()))
             AgentBuildData agentBuildData = new AgentBuildData(playerCharacter);

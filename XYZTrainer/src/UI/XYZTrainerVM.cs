@@ -26,6 +26,9 @@ namespace XYZTrainer
 
         private string _start_button_text { get; set; }
 
+        private string _next_button_text { get; set; }
+        private string _prev_button_text { get; set; }
+
         [DataSourceProperty]
         public string StartButtonText
         {
@@ -47,7 +50,8 @@ namespace XYZTrainer
         {
             _state = state;
             TitleText = "XYZTrainingField";
-
+            this.NextButtonText = new TextObject("{=Rvr1bcu8}Next", null).ToString();
+            this.PrevButtonText = new TextObject("{=WXAaWZVf}Previous", null).ToString();
             this.Projects = new MBBindingList<XYZTrainerProjectVM>();
             for (int i = 0; i < 6; ++i)
             {
@@ -63,7 +67,6 @@ namespace XYZTrainer
             this.Title = "XYZ Training Fields";
             this.Description = "Choose your training project";
             this.SelectionText = "Training Project";
-            OnProjectSelection(this.Projects[2]);
             RefreshValues();
         }
         private void OnProjectSelection(XYZTrainerProjectVM selectedProject)
@@ -111,9 +114,12 @@ namespace XYZTrainer
             this.StartButtonText = GameTexts.FindText("str_start", null).ToString();
         }
 
-        protected bool CanAdvanceToNextStage()
+        public bool CanAdvance
         {
-            return this.Projects.Any((XYZTrainerProjectVM s) => s.IsSelected);
+            get
+            {
+                return this.Projects.Any((XYZTrainerProjectVM s) => s.IsSelected);
+            }
         }
 
         [DataSourceProperty]
@@ -146,6 +152,40 @@ namespace XYZTrainer
                 {
                     this._currentSelectedProject = value;
                     base.OnPropertyChangedWithValue(value, "CurrentSelectedProject");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string PrevButtonText
+        {
+            get
+            {
+                return this._prev_button_text;
+            }
+            set
+            {
+                if (value != this._prev_button_text)
+                {
+                    this._prev_button_text = value;
+                    base.OnPropertyChangedWithValue(value, "PrevButtonText");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string NextButtonText
+        {
+            get
+            {
+                return this._next_button_text;
+            }
+            set
+            {
+                if (value != this._next_button_text)
+                {
+                    this._next_button_text = value;
+                    base.OnPropertyChangedWithValue(value, "NextButtonText");
                 }
             }
         }

@@ -1,9 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <NPCCharacters>
-  <NPCCharacter id="xyz_tutorial_npc_advanced_melee_easy" default_group="Infantry" is_hero="true" level="15" is_female="true" culture="Culture.battania" name="{=8AHT9pt5}Training Master" banner_symbol_mesh_name="test_symbol_a" occupation="Soldier" banner_symbol_color="FF000000" is_hidden_encyclopedia="true">
+   <NPCCharacter id="xyz_eox" default_group="Infantry" is_hero="true" level="15" is_female="true" culture="Culture.battania" name="{=8AHT9pt5}Training Master" banner_symbol_mesh_name="test_symbol_a" occupation="Soldier" banner_symbol_color="FF000000" is_hidden_encyclopedia="true">
     <face>
-      <BodyProperties version="4" age="25.12" weight="0.9" build="0"  key="001B700D12B4300A7C7F6487675108807577866254C69643C4B606348C95A0370140E613F4A7497300000000000000000000000000000000000000003A944003"  />
+	  <BodyProperties version="4" age="20" weight="0.5" build="0.5"  key="001BFC0D0A2C300A7C7F6487675108807577856254C90643C4B606348C95A0370147761304A7497300000000000000000000000000000000000000003A944003"/>
+	</face>
+    <skills>
+	  <skill id="OneHanded" value="60" />
+	  <skill id="TwoHanded" value="60" />
+	</skills>
+    <Traits>
+      <Trait id="HopliteFightingSkills" value="5" />
+      <Trait id="Commander" value="7" />
+      <Trait id="Politician" value="5" />
+      <Trait id="Manager" value="8" />
+      <Trait id="Valor" value="1" />
+    </Traits>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0" id="Item.wooden_2hsword_t1" />
+        <equipment slot="Body" id="Item.empire_warrior_padded_armor_d" />
+        <equipment slot="Leg" id="Item.fine_town_boots" />
+        <equipment slot="Horse" id="Item.noble_horse" />
+        <equipment slot="HorseHarness" id="Item.half_mail_and_plate_barding" />
+      </EquipmentRoster>
+    </Equipments>
+  </NPCCharacter>
+  
+  <NPCCharacter id="xyz_blocking_trainer" default_group="Infantry" is_hero="true" level="50" is_female="true" culture="Culture.battania" name="{=8AHT9pt5}Training Master" banner_symbol_mesh_name="test_symbol_a" occupation="Soldier" banner_symbol_color="FF000000" is_hidden_encyclopedia="true">
+    <face>
+      <BodyProperties version="4" age="25" weight="0.9" build="0"  key="001B700D12B4300A7C7F6487675108807577866254C69643C4B606348C95A0370140E613F4A7497300000000000000000000000000000000000000003A944003"  />
     </face>
     <skills>
 	  <skill id="OneHanded" value="400" />
