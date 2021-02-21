@@ -65,7 +65,7 @@ namespace XYZTrainer.UI
         {
             if (!this._isMovieLoaded)
             {
-                this._gauntletMovie = this._gauntletLayer.LoadMovie(nameof(XYZTrainerMainScreen), this._dataSource);
+                this._gauntletMovie = this._gauntletLayer.LoadMovie("XYZTrainerMainScreen2", this._dataSource);
                 this._isMovieLoaded = true;
             }
         }
