@@ -22,7 +22,10 @@ namespace XYZTrainer
 			MBDebug.Print("XYZ: MissionState.OpenNew");
 			Mission createdMission = MissionState.OpenNew("XTZTrainingField", rec,
 				(Mission mission) => new MissionBehaviour[] {
+					new MissionOptionsComponent(),
 					new XYZTrainerMissionController(),
+					//new BasicLeaveMissionLogic(),
+					//new LeaveMissionLogic(),
 			}, true, true);
 			//new MissionOptionsComponent(),
 			//new CampaignMissionComponent(),

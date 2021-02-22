@@ -75,8 +75,10 @@ namespace XYZTrainer
 		}
 
 		// Token: 0x06001348 RID: 4936 RVA: 0x000484BC File Offset: 0x000466BC
-		public XYZAgentOrigin(XYZCombatant customBattleCombatant, BasicCharacterObject characterObject, bool isPlayerSide, int rank = -1, UniqueTroopDescriptor uniqueNo = default(UniqueTroopDescriptor))
+		public XYZAgentOrigin(XYZCombatant customBattleCombatant, BasicCharacterObject characterObject, bool isPlayerSide)
 		{
+			int rank = -1;
+			UniqueTroopDescriptor uniqueNo = default(UniqueTroopDescriptor);
 			this.CustomBattleCombatant = customBattleCombatant;
 			this.Troop = characterObject;
 			this._descriptor = ((!uniqueNo.IsValid) ? new UniqueTroopDescriptor(Game.Current.NextUniqueTroopSeed) : uniqueNo);
