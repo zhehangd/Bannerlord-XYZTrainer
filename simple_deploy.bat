@@ -1,0 +1,2 @@
+rd /s/q "C:\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\XYZTrainer"
+xcopy /E/C/I/Y/F XYZTrainer\bin\XYZTrainer\. "C:\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\XYZTrainer"

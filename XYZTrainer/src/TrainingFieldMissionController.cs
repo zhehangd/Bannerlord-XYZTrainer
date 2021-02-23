@@ -45,7 +45,7 @@ namespace XYZTrainer
 
             base.Mission.Teams.Add(BattleSideEnum.Defender, _color1, _color2, null, true, false, true);
             base.Mission.Teams.Add(BattleSideEnum.Attacker, _color1, _color2, null, true, false, true);
-            base.Mission.Teams.Add(BattleSideEnum.Attacker, uint.MaxValue, uint.MaxValue, null, true, false, true);
+            base.Mission.Teams.Add(BattleSideEnum.Attacker, uint.MaxValue, uint.MaxValue, null, true, false, true); // Ally
             base.Mission.PlayerTeam = base.Mission.AttackerTeam;
             this._playerTeam = base.Mission.AttackerTeam;
             this._enemyTeam = base.Mission.DefenderTeam;
@@ -58,7 +58,11 @@ namespace XYZTrainer
             this.PlayerAgent = SpawnPlayer();
             this._trainerAgent = SpawnTrainer();
 
-            this.InitializeTrainingAreas();
+            this.InitializeTutorialAreas();
+            this._report_tick = true;
+            this._next_report_time = 0;
+            this._total_time = 0;
+            InformationManager.DisplayMessage(new InformationMessage("Initialized"));
         }
 
         private Agent SpawnPlayer()
@@ -97,56 +101,96 @@ namespace XYZTrainer
             return agent;
         }
 
+        public override void OnAgentCreated(Agent agent)
+        {
+            // From AgentTownAILogic
+            // Confirmed AgentAIStateFlagComponent is used
+            base.OnAgentCreated(agent);
+            if (agent.IsAIControlled)
+            {
+                agent.AddComponent(new UseObjectAgentComponent(agent));
+                agent.AddComponent(new AgentAIStateFlagComponent(agent));
+                agent.AddComponent(new AIBehaviorComponent(agent));
+            }
+        }
+
         private BasicCharacterObject GetCharacter(string name)
         {
             return Game.Current.ObjectManager.GetObject<BasicCharacterObject>(name);
         }
 
-        private void InitializeTrainingAreas()
+        private void InitializeTutorialAreas()
         {
+            int numTrainingAreas = 0;
             List<GameEntity> list = new List<GameEntity>();
             Mission.Current.Scene.GetEntities(ref list);
             foreach (GameEntity gameEntity in list)
             {
-                if (gameEntity.GetFirstScriptOfType<TrainingArea>() != null)
+                if (gameEntity.GetFirstScriptOfType<TutorialArea>() != null)
                 {
-                    this._trainingAreas.Add(gameEntity.GetFirstScriptOfType<TrainingArea>());
+                    var trainingArea = gameEntity.GetFirstScriptOfType<TutorialArea>();
+                    this._trainingAreas.Add(trainingArea);
+                    numTrainingAreas += 1;
                 }
             }
 
             // ---------------------------------
-            // InitializeTrainingAreas
-            // For not ended:
-            //   TrainingAreaUpdate
+            // InitializeTutorialAreas
+            // For each tick:
+            //   TutorialAreaUpdate
             //     One of Three
-            //     * OnTrainingAreaEnter
-            //     * InTrainingArea
-            //     * OnTrainingAreaExit
+            //     * OnTutorialAreaEnter
+            //     * InTutorialArea
+            //     * OnTutorialAreaExit
             // ----------------------------------
         }
-        private void TrainingAreaUpdate()
+
+        public override void OnMissionTick(float dt)
         {
-            
-            if (this._activeTrainingArea != null)
+            _total_time += dt;
+            _next_report_time -= dt;
+            if (_next_report_time < 0)
             {
-                if (this._activeTrainingArea.IsPositionInsideTrainingArea(Agent.Main.Position))
+                _report_tick = true;
+                InformationManager.DisplayMessage(new InformationMessage(string.Format("Report ({0}/{1})", dt, _total_time)));
+            }
+
+            if (_report_tick)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("Agent Position: " + Agent.Main.Position));
+            }
+
+            this.TutorialAreaUpdate();
+
+            if (_report_tick)
+            {
+                _next_report_time = 10;
+                _report_tick = false;
+            }
+        }
+
+        private void TutorialAreaUpdate()
+        {
+            if (this._activeTutorialArea != null)
+            {
+                if (this._activeTutorialArea.IsPositionInsideTutorialArea(Agent.Main.Position))
                 {
-                    this.InTrainingArea();
+                    this.InTutorialArea();
                 }
                 else
                 {
-                    this.OnTrainingAreaExit();
-                    this._activeTrainingArea = null;
+                    this.OnTutorialAreaExit();
+                    this._activeTutorialArea = null;
                 }
             }
             else
             {
-                foreach (TrainingArea trainingArea in this._trainingAreas)
+                foreach (TutorialArea trainingArea in this._trainingAreas)
                 {
-                    if (trainingArea.IsPositionInsideTrainingArea(Agent.Main.Position))
+                    if (trainingArea.IsPositionInsideTutorialArea(Agent.Main.Position))
                     {
-                        this._activeTrainingArea = trainingArea;
-                        this.OnTrainingAreaEnter();
+                        this._activeTutorialArea = trainingArea;
+                        this.OnTutorialAreaEnter();
                         break;
                     }
                 }
@@ -154,7 +198,7 @@ namespace XYZTrainer
         }
 
 
-        private void OnTrainingAreaEnter()
+        private void OnTutorialAreaEnter()
         {
             // Do stuff
             InformationManager.DisplayMessage(new InformationMessage("Enter Training Area"));
@@ -164,24 +208,41 @@ namespace XYZTrainer
             // NPC attacks
         }
         
-        private void InTrainingArea()
+        private void InTutorialArea()
         {
+            if (this._activeTutorialArea.TypeOfTraining == TutorialArea.TrainingType.AdvancedMelee)
+            {
+                InBlockingArea();
+            }
+        }
 
+        private void InBlockingArea()
+        {
+            MBDebug.Print("A");
+            this._trainerAgent.SetTeam(Mission.Current.PlayerEnemyTeam, false);
+            MBDebug.Print("B");
+            var comp = this._trainerAgent.GetComponent<AgentAIStateFlagComponent>();
+            MBDebug.Print("C");
+            comp.CurrentWatchState = AgentAIStateFlagComponent.WatchState.Alarmed;
+            MBDebug.Print("D");
+            this._trainerAgent.DisableScriptedMovement();
+            MBDebug.Print("E");
+            //this.CurrentObjectiveTick(new TextObject("{=yflx4LNc}Defeat the trainer!", null));
         }
 
         private void EndTraining()
         {
-            this._activeTrainingArea = null;
+            this._activeTutorialArea = null;
         }
 
-        private void ResetTrainingArea()
+        private void ResetTutorialArea()
         {
-            this.OnTrainingAreaExit();
-            this.OnTrainingAreaEnter();
+            this.OnTutorialAreaExit();
+            this.OnTutorialAreaEnter();
         }
 
         // Token: 0x0600011F RID: 287 RVA: 0x000064F0 File Offset: 0x000046F0
-        private void OnTrainingAreaExit()
+        private void OnTutorialAreaExit()
         {
             InformationManager.DisplayMessage(new InformationMessage("Exit Training Area"));
             Mission.Current.MakeSound(
@@ -204,8 +265,14 @@ namespace XYZTrainer
         private uint _color1;
         private uint _color2;
 
-        private TrainingArea _activeTrainingArea;
+        private TutorialArea _activeTutorialArea;
 
-        private List<TrainingArea> _trainingAreas = new List<TrainingArea>();
+        private List<TutorialArea> _trainingAreas = new List<TutorialArea>();
+
+        private bool _report_tick;
+        private float _total_time;
+        private float _next_report_time;
+
+        public Action<TextObject> CurrentObjectiveTick;
     }
 }
