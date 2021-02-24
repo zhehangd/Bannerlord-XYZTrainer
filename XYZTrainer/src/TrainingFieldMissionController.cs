@@ -62,6 +62,8 @@ namespace XYZTrainer
             this._report_tick = true;
             this._next_report_time = 0;
             this._total_time = 0;
+
+            base.Mission.SetMissionMode(MissionMode.Battle, true);
             InformationManager.DisplayMessage(new InformationMessage("Initialized"));
         }
 
@@ -155,13 +157,13 @@ namespace XYZTrainer
                 InformationManager.DisplayMessage(new InformationMessage(string.Format("Report ({0}/{1})", dt, _total_time)));
             }
 
-            if (_report_tick)
+            if (_report_tick && base.Mission.MainAgent != null)
             {
                 InformationManager.DisplayMessage(new InformationMessage("Agent Position: " + Agent.Main.Position));
             }
-
-            this.TutorialAreaUpdate();
-
+            if (base.Mission.MainAgent != null && base.Mission.MainAgent.IsActive()) {
+                this.TutorialAreaUpdate();
+            }
             if (_report_tick)
             {
                 _next_report_time = 10;
@@ -206,6 +208,11 @@ namespace XYZTrainer
                 SoundEvent.GetEventIdFromString("event:/mission/tutorial/vo/fighting/greet"),
                 this._trainerAgent.GetEyeGlobalPosition(), true, false, -1, -1);
             // NPC attacks
+
+            if (this._activeTutorialArea.TypeOfTraining == TutorialArea.TrainingType.AdvancedMelee)
+            {
+                OnEnterBlockingArea();
+            }
         }
         
         private void InTutorialArea()
@@ -216,17 +223,16 @@ namespace XYZTrainer
             }
         }
 
+        private void OnEnterBlockingArea()
+        {
+            this._trainerAgent.SetTeam(Mission.Current.PlayerEnemyTeam, false);
+            var comp = this._trainerAgent.GetComponent<AgentAIStateFlagComponent>();
+            comp.CurrentWatchState = AgentAIStateFlagComponent.WatchState.Alarmed;
+            this._trainerAgent.DisableScriptedMovement();
+        }
+
         private void InBlockingArea()
         {
-            MBDebug.Print("A");
-            this._trainerAgent.SetTeam(Mission.Current.PlayerEnemyTeam, false);
-            MBDebug.Print("B");
-            var comp = this._trainerAgent.GetComponent<AgentAIStateFlagComponent>();
-            MBDebug.Print("C");
-            comp.CurrentWatchState = AgentAIStateFlagComponent.WatchState.Alarmed;
-            MBDebug.Print("D");
-            this._trainerAgent.DisableScriptedMovement();
-            MBDebug.Print("E");
             //this.CurrentObjectiveTick(new TextObject("{=yflx4LNc}Defeat the trainer!", null));
         }
 
@@ -245,9 +251,9 @@ namespace XYZTrainer
         private void OnTutorialAreaExit()
         {
             InformationManager.DisplayMessage(new InformationMessage("Exit Training Area"));
-            Mission.Current.MakeSound(
-                SoundEvent.GetEventIdFromString("event:/mission/tutorial/finish_course"),
-                Agent.Main.GetEyeGlobalPosition(), true, false, -1, -1);
+            //Mission.Current.MakeSound(
+            //    SoundEvent.GetEventIdFromString("event:/mission/tutorial/finish_course"),
+            //    Agent.Main.GetEyeGlobalPosition(), true, false, -1, -1);
         }
 
         public XYZCombatant PlayerParty;

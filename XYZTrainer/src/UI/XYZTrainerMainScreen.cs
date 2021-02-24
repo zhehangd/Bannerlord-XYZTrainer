@@ -10,6 +10,8 @@ using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.Screen;
 
+using TaleWorlds.TwoDimension; 
+
 namespace XYZTrainer.UI
 {
     [GameStateScreen(typeof(XYZTrainerState))]
@@ -20,6 +22,7 @@ namespace XYZTrainer.UI
         private GauntletLayer _gauntletLayer;
         private bool _isMovieLoaded;
         private XYZTrainerState _state;
+        private SpriteCategory _charactercreation;
 
         public XYZTrainerMainScreen(XYZTrainerState state) {
             this._state = state;
@@ -30,11 +33,20 @@ namespace XYZTrainer.UI
             base.OnInitialize();
             _dataSource = new XYZTrainerVM(this._state);
             _gauntletLayer = new GauntletLayer(1, "GauntletLayer");
-            this.LoadMovie();
             _gauntletLayer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
             AddLayer(_gauntletLayer);
             MBDebug.Print("StartButtonText: " + _dataSource.StartButtonText);
             _dataSource.OnPropertyChangedWithValue(_dataSource.StartButtonText, "StartButtonText");
+
+            this.LoadMovie();
+
+            // Must load the sprite category otherwise the sprite images won't show up.
+            SpriteData spriteData = UIResourceManager.SpriteData;
+            TwoDimensionEngineResourceContext resourceContext = UIResourceManager.ResourceContext;
+            ResourceDepot uiresourceDepot = UIResourceManager.UIResourceDepot;
+            this._charactercreation = spriteData.SpriteCategories["ui_charactercreation"];
+            this._charactercreation.Load(resourceContext, uiresourceDepot);
+
         }
         protected override void OnFinalize()
         {
@@ -42,6 +54,7 @@ namespace XYZTrainer.UI
             base.RemoveLayer(this._gauntletLayer);
             this._dataSource = null;
             this._gauntletLayer = null;
+            this._charactercreation.Unload();
             base.OnFinalize();
         }
 

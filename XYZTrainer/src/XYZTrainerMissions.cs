@@ -12,9 +12,11 @@ using TaleWorlds.MountAndBlade.Source.Missions.Handlers;
 namespace XYZTrainer
 {
 
-    public static class XYZTrainerMissions
+	[MissionManager]
+	public static class XYZTrainerMissions
     {
-        public static Mission OpenXYZTrainerMission()
+		[MissionMethod]
+		public static Mission OpenXYZTrainerMission()
         {
 			string scene = "training_field_2";
 			MBDebug.Print("XYZ " + Game.Current.GameStateManager);
