@@ -52,13 +52,12 @@ namespace XYZTrainer
 
             this._culture = Game.Current.ObjectManager.GetObject<BasicCultureObject>("empire");
             this._banner = Banner.CreateRandomBanner(-1);
-            this.PlayerParty = new XYZCombatant(new TextObject("{=sSJSTe5p}Player Party", null), _culture, _banner);
-            this.EnemyParty = new XYZCombatant(new TextObject("{=0xC75dN6}Enemy Party", null), _culture, _banner);
+            this.MainCombatant = new XYZCombatant(new TextObject("{=sSJSTe5p}Player Party", null), _culture, _banner);
+            //this.EnemyParty = new XYZCombatant(new TextObject("{=0xC75dN6}Enemy Party", null), _culture, _banner);
 
             this.PlayerAgent = SpawnPlayer();
-            this._trainerAgent = SpawnTrainer();
 
-            this.InitializeTutorialAreas();
+            this.InitializeTutorialAreas(); // after player
             this._report_tick = true;
             this._next_report_time = 0;
             this._total_time = 0;
@@ -79,27 +78,9 @@ namespace XYZTrainer
                 .Team(base.Mission.PlayerTeam).InitialFrame(matrixFrame)
                 .NoHorses(true).NoWeapons(false).ClothingColor1(base.Mission.PlayerTeam.Color)
                 .ClothingColor2(base.Mission.PlayerTeam.Color2)
-                .TroopOrigin(new XYZAgentOrigin(PlayerParty, playerCharacter, true))
+                .TroopOrigin(new XYZAgentOrigin(MainCombatant, playerCharacter, true))
                 .Controller(Agent.ControllerType.Player);
             Agent agent = base.Mission.SpawnAgent(agentBuildData, false, 0);
-            return agent;
-        }
-
-        private Agent SpawnTrainer()
-        {
-            this._trainerInitFrame = MatrixFrame.Identity;
-            GameEntity trainerSpawner = base.Mission.Scene.FindEntityWithTag("spawner_adv_melee_npc_easy");
-            this._trainerInitFrame = trainerSpawner.GetGlobalFrame();
-            this._trainerInitFrame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
-            
-            BasicCharacterObject trainerCharacter = GetCharacter("xyz_blocking_trainer");
-            AgentBuildData agentBuildData = new AgentBuildData(trainerCharacter)
-                .Team(_playerTeam).InitialFrame(this._trainerInitFrame)
-                .ClothingColor1(_color1).ClothingColor2(_color2).NoHorses(true)
-                .TroopOrigin(new XYZAgentOrigin(PlayerParty, trainerCharacter, false))
-                .Controller(Agent.ControllerType.AI);
-            Agent agent = base.Mission.SpawnAgent(agentBuildData, false, 0);
-            agent.SetTeam(_enemyTeam, false);
             return agent;
         }
 
@@ -123,6 +104,9 @@ namespace XYZTrainer
 
         private void InitializeTutorialAreas()
         {
+
+            this._trainingAreas.Add(new XYZBlockingTrainingArea().Initialize());
+
             int numTrainingAreas = 0;
             List<GameEntity> list = new List<GameEntity>();
             Mission.Current.Scene.GetEntities(ref list);
@@ -131,7 +115,7 @@ namespace XYZTrainer
                 if (gameEntity.GetFirstScriptOfType<TutorialArea>() != null)
                 {
                     var trainingArea = gameEntity.GetFirstScriptOfType<TutorialArea>();
-                    this._trainingAreas.Add(trainingArea);
+                    
                     numTrainingAreas += 1;
                 }
             }
@@ -175,89 +159,31 @@ namespace XYZTrainer
         {
             if (this._activeTutorialArea != null)
             {
-                if (this._activeTutorialArea.IsPositionInsideTutorialArea(Agent.Main.Position))
+                if (this._activeTutorialArea.IsPositionInside(Agent.Main.Position))
                 {
-                    this.InTutorialArea();
+                    this._activeTutorialArea.InTrainingArea();
                 }
                 else
                 {
-                    this.OnTutorialAreaExit();
+                    this._activeTutorialArea.OnTrainingAreaExit();
                     this._activeTutorialArea = null;
                 }
             }
             else
             {
-                foreach (TutorialArea trainingArea in this._trainingAreas)
+                foreach (var trainingArea in this._trainingAreas)
                 {
-                    if (trainingArea.IsPositionInsideTutorialArea(Agent.Main.Position))
+                    if (trainingArea.IsPositionInside(Agent.Main.Position))
                     {
                         this._activeTutorialArea = trainingArea;
-                        this.OnTutorialAreaEnter();
+                        this._activeTutorialArea.OnTrainingAreaEnter();
                         break;
                     }
                 }
             }
         }
 
-
-        private void OnTutorialAreaEnter()
-        {
-            // Do stuff
-            InformationManager.DisplayMessage(new InformationMessage("Enter Training Area"));
-            Mission.Current.MakeSound(
-                SoundEvent.GetEventIdFromString("event:/mission/tutorial/vo/fighting/greet"),
-                this._trainerAgent.GetEyeGlobalPosition(), true, false, -1, -1);
-            // NPC attacks
-
-            if (this._activeTutorialArea.TypeOfTraining == TutorialArea.TrainingType.AdvancedMelee)
-            {
-                OnEnterBlockingArea();
-            }
-        }
-        
-        private void InTutorialArea()
-        {
-            if (this._activeTutorialArea.TypeOfTraining == TutorialArea.TrainingType.AdvancedMelee)
-            {
-                InBlockingArea();
-            }
-        }
-
-        private void OnEnterBlockingArea()
-        {
-            this._trainerAgent.SetTeam(Mission.Current.PlayerEnemyTeam, false);
-            var comp = this._trainerAgent.GetComponent<AgentAIStateFlagComponent>();
-            comp.CurrentWatchState = AgentAIStateFlagComponent.WatchState.Alarmed;
-            this._trainerAgent.DisableScriptedMovement();
-        }
-
-        private void InBlockingArea()
-        {
-            //this.CurrentObjectiveTick(new TextObject("{=yflx4LNc}Defeat the trainer!", null));
-        }
-
-        private void EndTraining()
-        {
-            this._activeTutorialArea = null;
-        }
-
-        private void ResetTutorialArea()
-        {
-            this.OnTutorialAreaExit();
-            this.OnTutorialAreaEnter();
-        }
-
-        // Token: 0x0600011F RID: 287 RVA: 0x000064F0 File Offset: 0x000046F0
-        private void OnTutorialAreaExit()
-        {
-            InformationManager.DisplayMessage(new InformationMessage("Exit Training Area"));
-            //Mission.Current.MakeSound(
-            //    SoundEvent.GetEventIdFromString("event:/mission/tutorial/finish_course"),
-            //    Agent.Main.GetEyeGlobalPosition(), true, false, -1, -1);
-        }
-
-        public XYZCombatant PlayerParty;
-        public XYZCombatant EnemyParty;
+        public XYZCombatant MainCombatant;
 
         public Banner _banner;
         private BasicCultureObject _culture;
@@ -271,9 +197,9 @@ namespace XYZTrainer
         private uint _color1;
         private uint _color2;
 
-        private TutorialArea _activeTutorialArea;
+        private XYZBlockingTrainingArea _activeTutorialArea;
 
-        private List<TutorialArea> _trainingAreas = new List<TutorialArea>();
+        private List<XYZBlockingTrainingArea> _trainingAreas = new List<XYZBlockingTrainingArea>();
 
         private bool _report_tick;
         private float _total_time;
