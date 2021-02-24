@@ -57,6 +57,11 @@ namespace XYZTrainer
 
             this.PlayerAgent = SpawnPlayer();
 
+            this.SpwanNPC("xyz_eox", new Vec3(294.278f, 411.761f, 8.310f));
+            this.SpwanNPC("xyz_starryknight", new Vec3(295.278f, 411.761f, 8.310f));
+            this.SpwanNPC("xyz_yaksha", new Vec3(293.278f, 411.761f, 8.310f));
+            this.SpwanNPC("xyz_atlantis_164", new Vec3(292.278f, 411.761f, 8.310f));
+
             this.InitializeTutorialAreas(); // after player
             this._report_tick = true;
             this._next_report_time = 0;
@@ -64,6 +69,23 @@ namespace XYZTrainer
 
             base.Mission.SetMissionMode(MissionMode.Battle, true);
             InformationManager.DisplayMessage(new InformationMessage("Initialized"));
+        }
+
+        private Agent SpwanNPC(string name, Vec3 pos)
+        {
+            MatrixFrame matrixFrame = MatrixFrame.Identity;
+            matrixFrame.origin = pos;
+            matrixFrame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
+
+            BasicCharacterObject playerCharacter = GetCharacter(name);
+            AgentBuildData agentBuildData = new AgentBuildData(playerCharacter)
+                .Team(base.Mission.PlayerTeam).InitialFrame(matrixFrame)
+                .NoHorses(true).NoWeapons(false).ClothingColor1(base.Mission.PlayerTeam.Color)
+                .ClothingColor2(base.Mission.PlayerTeam.Color2)
+                .TroopOrigin(new XYZAgentOrigin(MainCombatant, playerCharacter, true))
+                .Controller(Agent.ControllerType.AI);
+            Agent agent = base.Mission.SpawnAgent(agentBuildData, false, 0);
+            return agent;
         }
 
         private Agent SpawnPlayer()
@@ -189,10 +211,6 @@ namespace XYZTrainer
         private BasicCultureObject _culture;
         private Team _playerTeam;
         private Team _enemyTeam;
-
-
-        private MatrixFrame _trainerInitFrame;
-        private Agent _trainerAgent;
 
         private uint _color1;
         private uint _color2;
