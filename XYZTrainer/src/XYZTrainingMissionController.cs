@@ -1,6 +1,6 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
-using System.Text;
 
 using System;
 using System.Collections.Generic;
@@ -23,8 +23,6 @@ namespace XYZTrainer
     
     class XYZTrainingMissionController : MissionLogic
     {
-
-        Agent PlayerAgent = null;
 
         public override void OnMissionActivate()
         {
@@ -55,7 +53,15 @@ namespace XYZTrainer
             this.MainCombatant = new XYZCombatant(new TextObject("{=sSJSTe5p}Player Party", null), _culture, _banner);
             //this.EnemyParty = new XYZCombatant(new TextObject("{=0xC75dN6}Enemy Party", null), _culture, _banner);
 
-            this.PlayerAgent = SpawnPlayer();
+            SpawnPlayer();
+
+            MissionTimestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            this.SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\Mount and Blade II Bannerlord\\XYZTrainer\\";
+            if (!Directory.Exists(this.SaveDirectory))
+            {
+                Directory.CreateDirectory(this.SaveDirectory);
+            }
 
             this.SpwanNPC("xyz_eox", new Vec3(294.278f, 411.761f, 8.310f));
             this.SpwanNPC("xyz_starryknight", new Vec3(295.278f, 411.761f, 8.310f));
@@ -127,7 +133,7 @@ namespace XYZTrainer
 
         private void InitializeTutorialAreas()
         {
-            this._trainingAreas.Add(new XYZBlockingTrainingArea().Initialize());
+            this._trainingAreas.Add(new XYZTrainingBlockingArea().Initialize(this));
 
             int numTrainingAreas = 0;
             List<GameEntity> list = new List<GameEntity>();
@@ -241,9 +247,9 @@ namespace XYZTrainer
         private uint _color1;
         private uint _color2;
 
-        private XYZBlockingTrainingArea _activeTutorialArea;
+        private XYZTrainingBlockingArea _activeTutorialArea;
 
-        private List<XYZBlockingTrainingArea> _trainingAreas = new List<XYZBlockingTrainingArea>();
+        private List<XYZTrainingBlockingArea> _trainingAreas = new List<XYZTrainingBlockingArea>();
 
         private bool _report_tick;
         private float _total_time;
@@ -276,6 +282,8 @@ namespace XYZTrainer
 
         private List<DelayedAction> _delayedActions = new List<DelayedAction>();
 
-        public Action<TextObject> CurrentObjectiveTick;
+        public String SaveDirectory;
+
+        public String MissionTimestamp;
     }
 }

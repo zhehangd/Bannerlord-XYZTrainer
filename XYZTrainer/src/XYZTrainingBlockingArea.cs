@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 
 using TaleWorlds.Core;
@@ -9,10 +10,11 @@ using TaleWorlds.MountAndBlade;
 
 namespace XYZTrainer
 {
-    class XYZBlockingTrainingArea
+    class XYZTrainingBlockingArea
     {
-        public XYZBlockingTrainingArea Initialize()
+        public XYZTrainingBlockingArea Initialize(XYZTrainingMissionController mainCtrl)
         {
+            this._mainCtrl = mainCtrl;
             this.FindArea();
             this.SpawnTrainer();
             return this;
@@ -102,15 +104,24 @@ namespace XYZTrainer
 			_numTimes += 1;
 			float avgScore = _totalScore / _numTimes;
 			InformationManager.DisplayMessage(new InformationMessage(String.Format("Score/Average: {0}/{1}", score, avgScore)));
-			ClearFightScore();
+
+            string scoreFile = _mainCtrl.SaveDirectory + "blocking_score.txt";
+            String missionTimestamp = _mainCtrl.MissionTimestamp;
+            String fightTimestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            File.AppendAllText(scoreFile, string.Format(
+                "{0}\t{1}\t{2}\t{3}\t{4}\n", missionTimestamp, fightTimestamp,
+                score, _blockedDamage, _unblockedDamage));
+
+
+
+            ClearFightScore();
 		}
 
         public void StartCooldown()
         {
             _progress = Progress.Cooldown;
             ResetTrainer();
-            var mainLogic = Mission.Current.GetMissionBehaviour<XYZTrainingMissionController>();
-            mainLogic.AddDelayedAction(delegate () {
+            _mainCtrl.AddDelayedAction(delegate () {
                 _progress = Progress.Inactive;
                 InformationManager.DisplayMessage(new InformationMessage("Training Field Reset"));
             }, 10);
@@ -175,7 +186,6 @@ namespace XYZTrainer
         private void SpawnTrainer()
         {
             var mission = Mission.Current;
-            var mainLogic = mission.GetMissionBehaviour<XYZTrainingMissionController>();
             this._trainerInitFrame = MatrixFrame.Identity;
             GameEntity trainerSpawner = mission.Scene.FindEntityWithTag("spawner_adv_melee_npc_easy");
             this._trainerInitFrame = trainerSpawner.GetGlobalFrame();
@@ -186,7 +196,7 @@ namespace XYZTrainer
                 .Team(mission.PlayerAllyTeam).InitialFrame(this._trainerInitFrame)
                 .ClothingColor1(mission.PlayerTeam.Color)
                 .ClothingColor2(mission.PlayerTeam.Color2).NoHorses(true)
-                .TroopOrigin(new XYZAgentOrigin(mainLogic.MainCombatant, trainerCharacter, false))
+                .TroopOrigin(new XYZAgentOrigin(_mainCtrl.MainCombatant, trainerCharacter, false))
                 .Controller(Agent.ControllerType.AI);
             Agent agent = mission.SpawnAgent(agentBuildData, false, 0);
             agent.SetInvulnerable(true);
@@ -233,6 +243,9 @@ namespace XYZTrainer
         }
 
         private Progress _progress = Progress.Inactive;
+
+        private XYZTrainingMissionController _mainCtrl;
+
         private float _playerHealth = 0;
         private float _trainerHealth = 0;
 		

@@ -17,10 +17,10 @@ namespace XYZTrainer
 
     // Based on CharacterCreationCultureStageVM in StoryMode.VideoModelCollection.dll
 
-    public class XYZTrainerVM : ViewModel
+    public class XYZProjectSelectionVM : ViewModel
     {
 
-        private readonly XYZTrainerState _state;
+        private readonly XYZProjectSelectionState _state;
 
         public string TitleText { get; }
 
@@ -46,43 +46,35 @@ namespace XYZTrainer
             }
         }
 
-        public XYZTrainerVM(XYZTrainerState state)
+        public XYZProjectSelectionVM(XYZProjectSelectionState state)
         {
             _state = state;
             TitleText = "XYZTrainingField";
             this.NextButtonText = new TextObject("{=Rvr1bcu8}Next", null).ToString();
             this.PrevButtonText = new TextObject("{=WXAaWZVf}Previous", null).ToString();
-            this.Projects = new MBBindingList<XYZTrainerProjectVM>();
+            this.Projects = new MBBindingList<XYZProjectVM>();
             for (int i = 0; i < 6; ++i)
             {
-                XYZTrainerProjectVM item = new XYZTrainerProjectVM(i, new Action<XYZTrainerProjectVM>(this.OnProjectSelection));
+                XYZProjectVM item = new XYZProjectVM(i, new Action<XYZProjectVM>(this.OnProjectSelection));
                 this.Projects.Add(item);
             }
-
-            var spriteData = UIResourceManager.SpriteData;
-            var a = spriteData.GetSprite("CharacterCreation\\Culture\\empire");
-            MBDebug.Print("XYZ: Sprite " + a.Name);
-
 
             this.Title = "XYZ Training Fields";
             this.Description = "Choose your training project";
             this.SelectionText = "Training Project";
             RefreshValues();
         }
-        private void OnProjectSelection(XYZTrainerProjectVM selectedProject)
+        private void OnProjectSelection(XYZProjectVM selectedProject)
         {
 
-            foreach (XYZTrainerProjectVM projVM in
+            foreach (XYZProjectVM projVM in
                 from c in this.Projects where c.IsSelected select c)
             {
                 projVM.IsSelected = false;
             }
             selectedProject.IsSelected = true;
             this.CurrentSelectedProject = selectedProject;
-            MBDebug.Print("XYZ selectedProject = " + selectedProject.CultureID);
             this.AnyItemSelected = true;
-            //CharacterCreationContent.Instance.Culture = selectedCulture.Culture;
-            //CharacterCreationContent.CultureOnCondition(this._characterCreation);
             base.OnPropertyChanged("CanAdvance");
         }
 
@@ -118,12 +110,12 @@ namespace XYZTrainer
         {
             get
             {
-                return this.Projects.Any((XYZTrainerProjectVM s) => s.IsSelected);
+                return this.Projects.Any((XYZProjectVM s) => s.IsSelected);
             }
         }
 
         [DataSourceProperty]
-        public MBBindingList<XYZTrainerProjectVM> Projects
+        public MBBindingList<XYZProjectVM> Projects
         {
             get
             {
@@ -140,7 +132,7 @@ namespace XYZTrainer
         }
 
         [DataSourceProperty]
-        public XYZTrainerProjectVM CurrentSelectedProject
+        public XYZProjectVM CurrentSelectedProject
         {
             get
             {
@@ -258,9 +250,9 @@ namespace XYZTrainer
             }
         }
 
-        private MBBindingList<XYZTrainerProjectVM> _projects;
+        private MBBindingList<XYZProjectVM> _projects;
 
-        private XYZTrainerProjectVM _currentSelectedProject;
+        private XYZProjectVM _currentSelectedProject;
 
         private string _title = "";
 

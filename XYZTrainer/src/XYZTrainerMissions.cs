@@ -19,22 +19,13 @@ namespace XYZTrainer
 		public static Mission OpenXYZTrainerMission()
         {
 			string scene = "training_field_2";
-			MBDebug.Print("XYZ " + Game.Current.GameStateManager);
 			MissionInitializerRecord rec = CreateXYZMissionInitializerRecord(scene);
 			MBDebug.Print("XYZ: MissionState.OpenNew");
 			Mission createdMission = MissionState.OpenNew("XTZTrainingField", rec,
 				(Mission mission) => new MissionBehaviour[] {
 					new MissionOptionsComponent(),
 					new XYZTrainingMissionController(),
-					//new BasicLeaveMissionLogic(),
-					//new LeaveMissionLogic(),
 			}, true, true);
-			//new MissionOptionsComponent(),
-			//new CampaignMissionComponent(),
-			//new MissionBasicTeamLogic(),
-			//new XYZTrainerMissionController(),
-			//new BasicLeaveMissionLogic(),
-			//new LeaveMissionLogic(),
 			return createdMission;
 		}
 

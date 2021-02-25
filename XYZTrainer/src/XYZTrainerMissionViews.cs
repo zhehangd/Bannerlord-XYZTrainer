@@ -11,7 +11,7 @@ using TaleWorlds.MountAndBlade.ViewModelCollection;
 namespace XYZTrainer
 {
     [ViewCreatorModule]
-    class XYZTrainerViews
+    class XYZTrainerMissionViews
     {
 		[ViewMethod("XTZTrainingField")]
 		public static MissionView[] OpenXYZTrainingFieldMission(Mission mission)

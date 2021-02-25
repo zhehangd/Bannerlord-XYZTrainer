@@ -52,7 +52,7 @@ namespace XYZTrainer
 		{
 			base.OnLoadFinished();
 			MBDebug.Print("XYZ: Pushing GameState");
-			Game.Current.GameStateManager.CleanAndPushState(Game.Current.GameStateManager.CreateState<XYZTrainerState>(), 0);
+			Game.Current.GameStateManager.CleanAndPushState(Game.Current.GameStateManager.CreateState<XYZProjectSelectionState>(), 0);
 			MBDebug.Print("XYZ: Pushed GameState");
 		}
 	}

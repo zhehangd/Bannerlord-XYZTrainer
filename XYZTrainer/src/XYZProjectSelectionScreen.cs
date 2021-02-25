@@ -14,24 +14,24 @@ using TaleWorlds.TwoDimension;
 
 namespace XYZTrainer.UI
 {
-    [GameStateScreen(typeof(XYZTrainerState))]
-    public class XYZTrainerMainScreen : ScreenBase, IGameStateListener
+    [GameStateScreen(typeof(XYZProjectSelectionState))]
+    public class XYZProjectSelectionScreen : ScreenBase, IGameStateListener
     {
-        private XYZTrainerVM _dataSource;
+        private XYZProjectSelectionVM _dataSource;
         private GauntletMovie _gauntletMovie;
         private GauntletLayer _gauntletLayer;
         private bool _isMovieLoaded;
-        private XYZTrainerState _state;
+        private XYZProjectSelectionState _state;
         private SpriteCategory _charactercreation;
 
-        public XYZTrainerMainScreen(XYZTrainerState state) {
+        public XYZProjectSelectionScreen(XYZProjectSelectionState state) {
             this._state = state;
         }
 
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            _dataSource = new XYZTrainerVM(this._state);
+            _dataSource = new XYZProjectSelectionVM(this._state);
             _gauntletLayer = new GauntletLayer(1, "GauntletLayer");
             _gauntletLayer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
             AddLayer(_gauntletLayer);
@@ -61,7 +61,7 @@ namespace XYZTrainer.UI
         protected override void OnActivate()
         {
             this.LoadMovie();
-            XYZTrainerVM dataSource = this._dataSource;
+            XYZProjectSelectionVM dataSource = this._dataSource;
             this._gauntletLayer.IsFocusLayer = true;
             ScreenManager.TrySetFocus(this._gauntletLayer);
             LoadingWindow.DisableGlobalLoadingWindow();
@@ -78,7 +78,7 @@ namespace XYZTrainer.UI
         {
             if (!this._isMovieLoaded)
             {
-                this._gauntletMovie = this._gauntletLayer.LoadMovie("XYZTrainerMainScreen2", this._dataSource);
+                this._gauntletMovie = this._gauntletLayer.LoadMovie("XYZTrainerProjectSelectionScreen", this._dataSource);
                 this._isMovieLoaded = true;
             }
         }

@@ -7,9 +7,9 @@ using TaleWorlds.Localization;
 
 namespace XYZTrainer
 {
-	public class XYZTrainerProjectVM : ViewModel
+	public class XYZProjectVM : ViewModel
 	{
-		public XYZTrainerProjectVM(int id, Action<XYZTrainerProjectVM> onSelection)
+		public XYZProjectVM(int id, Action<XYZProjectVM> onSelection)
 		{
 			this._onSelection = onSelection;
 			MBTextManager.SetTextVariable("FOCUS_VALUE", 1);
@@ -188,7 +188,7 @@ namespace XYZTrainer
 			}
 		}
 
-		private readonly Action<XYZTrainerProjectVM> _onSelection;
+		private readonly Action<XYZProjectVM> _onSelection;
 
 		private string _descriptionText = "";
 
