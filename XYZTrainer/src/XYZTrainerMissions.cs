@@ -25,7 +25,7 @@ namespace XYZTrainer
 			Mission createdMission = MissionState.OpenNew("XTZTrainingField", rec,
 				(Mission mission) => new MissionBehaviour[] {
 					new MissionOptionsComponent(),
-					new XYZTrainerMissionController(),
+					new XYZTrainingMissionController(),
 					//new BasicLeaveMissionLogic(),
 					//new LeaveMissionLogic(),
 			}, true, true);

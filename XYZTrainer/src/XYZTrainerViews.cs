@@ -14,7 +14,7 @@ namespace XYZTrainer
     class XYZTrainerViews
     {
 		[ViewMethod("XTZTrainingField")]
-		public static MissionView[] OpenCustomBattleMission(Mission mission)
+		public static MissionView[] OpenXYZTrainingFieldMission(Mission mission)
 		{
 			return new List<MissionView>
 			{

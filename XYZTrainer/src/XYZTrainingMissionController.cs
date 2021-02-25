@@ -21,7 +21,7 @@ using TaleWorlds.ObjectSystem;
 namespace XYZTrainer
 {
     
-    class XYZTrainerMissionController : MissionLogic
+    class XYZTrainingMissionController : MissionLogic
     {
 
         Agent PlayerAgent = null;

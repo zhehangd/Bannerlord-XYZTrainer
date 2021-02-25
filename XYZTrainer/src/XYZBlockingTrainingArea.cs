@@ -96,7 +96,7 @@ namespace XYZTrainer
         {
             _progress = Progress.Cooldown;
             ResetTrainer();
-            var mainLogic = Mission.Current.GetMissionBehaviour<XYZTrainerMissionController>();
+            var mainLogic = Mission.Current.GetMissionBehaviour<XYZTrainingMissionController>();
             mainLogic.AddDelayedAction(delegate () {
                 _progress = Progress.Inactive;
                 InformationManager.DisplayMessage(new InformationMessage("Training Field Reset"));
@@ -167,7 +167,7 @@ namespace XYZTrainer
         private void SpawnTrainer()
         {
             var mission = Mission.Current;
-            var mainLogic = mission.GetMissionBehaviour<XYZTrainerMissionController>();
+            var mainLogic = mission.GetMissionBehaviour<XYZTrainingMissionController>();
             this._trainerInitFrame = MatrixFrame.Identity;
             GameEntity trainerSpawner = mission.Scene.FindEntityWithTag("spawner_adv_melee_npc_easy");
             this._trainerInitFrame = trainerSpawner.GetGlobalFrame();
