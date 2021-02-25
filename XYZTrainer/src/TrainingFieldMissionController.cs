@@ -103,6 +103,7 @@ namespace XYZTrainer
                 .TroopOrigin(new XYZAgentOrigin(MainCombatant, playerCharacter, true))
                 .Controller(Agent.ControllerType.Player);
             Agent agent = base.Mission.SpawnAgent(agentBuildData, false, 0);
+            agent.SetInvulnerable(true);
             return agent;
         }
 
@@ -126,7 +127,6 @@ namespace XYZTrainer
 
         private void InitializeTutorialAreas()
         {
-
             this._trainingAreas.Add(new XYZBlockingTrainingArea().Initialize());
 
             int numTrainingAreas = 0;
@@ -141,35 +141,22 @@ namespace XYZTrainer
                     numTrainingAreas += 1;
                 }
             }
-
-            // ---------------------------------
-            // InitializeTutorialAreas
-            // For each tick:
-            //   TutorialAreaUpdate
-            //     One of Three
-            //     * OnTutorialAreaEnter
-            //     * InTutorialArea
-            //     * OnTutorialAreaExit
-            // ----------------------------------
         }
 
         public override void OnMissionTick(float dt)
         {
             _total_time += dt;
             _next_report_time -= dt;
-            if (_next_report_time < 0)
-            {
-                _report_tick = true;
-                InformationManager.DisplayMessage(new InformationMessage(string.Format("Report ({0}/{1})", dt, _total_time)));
-            }
+            if (_next_report_time < 0) {_report_tick = true;}
 
             if (_report_tick && base.Mission.MainAgent != null)
             {
                 InformationManager.DisplayMessage(new InformationMessage("Agent Position: " + Agent.Main.Position));
             }
-            if (base.Mission.MainAgent != null && base.Mission.MainAgent.IsActive()) {
-                this.TutorialAreaUpdate();
-            }
+            
+            TutorialAreaUpdate();
+            UpdateDelayedActions();
+
             if (_report_tick)
             {
                 _next_report_time = 10;
@@ -181,14 +168,17 @@ namespace XYZTrainer
         {
             if (this._activeTutorialArea != null)
             {
-                if (this._activeTutorialArea.IsPositionInside(Agent.Main.Position))
+                // Players may die in the training field, in that case we let training field
+                // decide what to do.
+                var playerAgent = base.Mission.MainAgent;
+                if (playerAgent == null || this._activeTutorialArea.IsPositionInside(playerAgent.Position))
                 {
                     this._activeTutorialArea.InTrainingArea();
                 }
                 else
                 {
                     this._activeTutorialArea.OnTrainingAreaExit();
-                    this._activeTutorialArea = null;
+                    InactivateCurrentTrainingArea();
                 }
             }
             else
@@ -203,6 +193,42 @@ namespace XYZTrainer
                     }
                 }
             }
+        }
+
+        public override void OnScoreHit(
+            Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon,
+            bool isBlocked, float damage, float movementSpeedDamageModifier, float hitDistance,
+            AgentAttackType attackType, float shotDifficulty, BoneBodyPartType victimHitBodyPart)
+        {
+            if (this._activeTutorialArea != null)
+            {
+                this._activeTutorialArea.OnScoreHit(
+                    affectedAgent, affectorAgent, attackerWeapon, isBlocked, damage,
+                    movementSpeedDamageModifier, hitDistance, attackType, shotDifficulty,
+                    victimHitBodyPart);
+            }
+        }
+
+        public void AddDelayedAction(Action act, float delayedTime)
+        {
+            _delayedActions.Add(new DelayedAction(act, delayedTime));
+        }
+
+        public void UpdateDelayedActions()
+        {
+            for (int i = this._delayedActions.Count - 1; i >= 0; i--)
+            {
+                if (this._delayedActions[i].Update())
+                {
+                    this._delayedActions.RemoveAt(i);
+                }
+            }
+        }
+
+        public void InactivateCurrentTrainingArea()
+        {
+            
+            this._activeTutorialArea = null;
         }
 
         public XYZCombatant MainCombatant;
@@ -222,6 +248,33 @@ namespace XYZTrainer
         private bool _report_tick;
         private float _total_time;
         private float _next_report_time;
+
+        // Manages an action that is planned to be executed in the future
+        public struct DelayedAction
+        {
+
+            public DelayedAction(Action act, float delayedTime)
+            {
+                this._action = act;
+                this._targetTime = Mission.Current.Time + delayedTime;
+            }
+
+            public bool Update()
+            {
+                if (Mission.Current.Time > this._targetTime)
+                {
+                    this._action();
+                    return true;
+                }
+                return false;
+            }
+
+            private float _targetTime;
+
+            private Action _action;
+        };
+
+        private List<DelayedAction> _delayedActions = new List<DelayedAction>();
 
         public Action<TextObject> CurrentObjectiveTick;
     }
