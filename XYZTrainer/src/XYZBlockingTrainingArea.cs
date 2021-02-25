@@ -48,12 +48,12 @@ namespace XYZTrainer
                     this._trainerHealth = this._trainerAgent.HealthLimit;
                     InformationManager.DisplayMessage(new InformationMessage("Player Health: " + _playerHealth));
                     InformationManager.DisplayMessage(new InformationMessage("Trainer Health: " + _trainerHealth));
+					ClearFightScore();
                     ActivateTrainer();
                     _progress = Progress.Fight;
                 }
             } else if (this._progress == Progress.Fight)
             {
-                MBDebug.Print("FIGHT TICK ");
                 bool playerLost = this._playerHealth <= 1f;
                 bool playerWon = this._trainerHealth <= 1f;
 
@@ -61,8 +61,6 @@ namespace XYZTrainer
 
                 if (playerLost)
                 {
-                    MBDebug.Print("FIGHT playerLost ");
-                    InformationManager.DisplayMessage(new InformationMessage("Player Loses"));
                     Mission.Current.MakeSound(
                         SoundEvent.GetEventIdFromString("event:/mission/tutorial/vo/fighting/player_lose"),
                         this._trainerAgent.GetEyeGlobalPosition(), true, false, -1, -1);
@@ -71,13 +69,12 @@ namespace XYZTrainer
                 }
                 if (playerWon)
                 {
-                    MBDebug.Print("FIGHT playerWon ");
-                    InformationManager.DisplayMessage(new InformationMessage("Player Wins"));
                     Mission.Current.MakeSound(
                         SoundEvent.GetEventIdFromString("event:/mission/tutorial/finish_course"),
                         Agent.Main.GetEyeGlobalPosition(), true, false, -1, -1);
                     AgentFallBackRise(_trainerAgent);
                 }
+				ConcludeFight();
                 ResetTrainer();
                 StartCooldown(); // progress = Cooldown 
                 return;
@@ -91,6 +88,22 @@ namespace XYZTrainer
 
             //this.CurrentObjectiveTick(new TextObject("{=yflx4LNc}Defeat the trainer!", null));
         }
+		
+		public void ClearFightScore()
+		{
+			_blockedDamage = 0;
+			_unblockedDamage = 0;
+		}
+		
+		public void ConcludeFight()
+		{
+			float score = 100 * _blockedDamage / (_unblockedDamage + 100f);
+			_totalScore += score;
+			_numTimes += 1;
+			float avgScore = _totalScore / _numTimes;
+			InformationManager.DisplayMessage(new InformationMessage(String.Format("Score/Average: {0}/{1}", score, avgScore)));
+			ClearFightScore();
+		}
 
         public void StartCooldown()
         {
@@ -126,11 +139,7 @@ namespace XYZTrainer
             var comp = this._trainerAgent.GetComponent<AgentAIStateFlagComponent>();
             comp.CurrentWatchState = AgentAIStateFlagComponent.WatchState.Alarmed;
         }
-
-        public void Cooldown()
-        {
-        }
-
+		
         public void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon,
                               bool isBlocked, float damage, float movementSpeedDamageModifier, float hitDistance,
                               AgentAttackType attackType, float shotDifficulty, BoneBodyPartType victimHitBodyPart)
@@ -141,11 +150,10 @@ namespace XYZTrainer
                 
                 if (isBlocked)
                 {
-                    InformationManager.DisplayMessage(new InformationMessage("Player Blocks " + damage));
-                    ++_numBlockings;
+                    _blockedDamage += damage;
                 } else
                 {
-                    InformationManager.DisplayMessage(new InformationMessage("Player hurt " + damage));
+                    _unblockedDamage += damage;
                     this._playerHealth -= damage;
                     affectedAgent.Health = Math.Max(1f, this._playerHealth);
                 }
@@ -227,6 +235,11 @@ namespace XYZTrainer
         private Progress _progress = Progress.Inactive;
         private float _playerHealth = 0;
         private float _trainerHealth = 0;
-        private int _numBlockings = 0;
+		
+		private float _blockedDamage = 0;
+		private float _unblockedDamage = 0;
+		private float _totalScore = 0;
+		private int _numTimes = 0;
+		
     }
 }
