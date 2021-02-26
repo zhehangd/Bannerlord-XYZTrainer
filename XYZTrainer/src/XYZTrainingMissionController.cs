@@ -63,10 +63,11 @@ namespace XYZTrainer
                 Directory.CreateDirectory(this.SaveDirectory);
             }
 
-            this.SpwanNPC("xyz_eox", new Vec3(294.278f, 411.761f, 8.310f));
-            this.SpwanNPC("xyz_starryknight", new Vec3(295.278f, 411.761f, 8.310f));
-            this.SpwanNPC("xyz_yaksha", new Vec3(293.278f, 411.761f, 8.310f));
-            this.SpwanNPC("xyz_atlantis_164", new Vec3(292.278f, 411.761f, 8.310f));
+            this.SpwanNPC("xyz_eox", new Vec3(294.278f, 405f, 8.310f));
+            this.SpwanNPC("xyz_starryknight", new Vec3(295.278f, 405f, 8.310f));
+            this.SpwanNPC("xyz_yaksha", new Vec3(293.278f, 405f, 8.310f));
+            this.SpwanNPC("xyz_atlantis_164", new Vec3(292.278f, 405f, 8.310f));
+            this.SpwanNPC("xyz_second", new Vec3(291.278f, 405f, 8.310f));
 
             this.InitializeTutorialAreas(); // after player
             this._report_tick = true;
@@ -98,7 +99,7 @@ namespace XYZTrainer
         {
 
             MatrixFrame matrixFrame = MatrixFrame.Identity;
-            matrixFrame.origin = new Vec3(324.665f, 391.142f, 8.480f);
+            matrixFrame.origin = new Vec3(300f, 412f, 8.310f);
             matrixFrame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
 
             BasicCharacterObject playerCharacter = GetCharacter("xyz_eox");
