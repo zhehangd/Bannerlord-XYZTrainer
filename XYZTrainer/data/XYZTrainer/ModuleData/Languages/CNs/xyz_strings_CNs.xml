@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-16"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="5KQgvmu3Du" text="XYZ 训练场" />
+    <string id="WeGjHFPPmK" text="请选择训练模块" />
+    <string id="IfW5pJtuE7" text="训练模块" />
+    <string id="hcqhGtDh8a" text="格挡训练" />
+    <string id="fhcEgJSiYf" text="格挡" />
+	<string id="FWhcpXwmWu" text="训练格挡技巧。" />
+  </strings>
+</base>

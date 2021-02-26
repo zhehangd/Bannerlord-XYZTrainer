@@ -90,6 +90,7 @@ namespace XYZTrainer
 			gameTextManager.LoadGameTexts(ModuleHelper.GetModuleFullPath("Native") + "ModuleData/global_strings.xml");
 			gameTextManager.LoadGameTexts(ModuleHelper.GetModuleFullPath("Native") + "ModuleData/module_strings.xml");
 			gameTextManager.LoadGameTexts(ModuleHelper.GetModuleFullPath("Native") + "ModuleData/native_strings.xml");
+			gameTextManager.LoadGameTexts(ModuleHelper.GetModuleFullPath("XYZTrainer") + "ModuleData/module_strings.xml");
 		}
 
 		private void InitializeGameModels(IGameStarter basicGameStarter)

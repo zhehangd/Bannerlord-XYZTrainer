@@ -78,7 +78,33 @@
       </EquipmentRoster>
     </Equipments>
   </NPCCharacter>
- 
+
+  <NPCCharacter id="xyz_second" default_group="Infantry" is_hero="true" level="15" is_female="false" culture="Culture.battania" name="{=8AHT9pt5}Training Master" banner_symbol_mesh_name="test_symbol_a" occupation="Soldier" banner_symbol_color="FF000000" is_hidden_encyclopedia="true">
+    <face>
+	  <BodyProperties version="4" age="25" weight="0.5" build="0.5"  key="0015FC0FC5CC21C5E77FF03A9F7F22617FA71097B063E91E8EF10E016FF2760201A770130A07710000000000000000000000000070F830820000000071403082"  />
+	</face>
+    <skills>
+	  <skill id="OneHanded" value="60" />
+	  <skill id="TwoHanded" value="60" />
+	</skills>
+    <Traits>
+      <Trait id="HopliteFightingSkills" value="5" />
+      <Trait id="Commander" value="7" />
+      <Trait id="Politician" value="5" />
+      <Trait id="Manager" value="8" />
+      <Trait id="Valor" value="1" />
+    </Traits>
+    <Equipments>
+      <EquipmentRoster>
+        <equipment slot="Item0" id="Item.wooden_2hsword_t1" />
+        <equipment slot="Body" id="Item.empire_warrior_padded_armor_d" />
+        <equipment slot="Leg" id="Item.fine_town_boots" />
+        <equipment slot="Horse" id="Item.noble_horse" />
+        <equipment slot="HorseHarness" id="Item.half_mail_and_plate_barding" />
+      </EquipmentRoster>
+    </Equipments>
+  </NPCCharacter>
+  
   <NPCCharacter id="xyz_starryknight" default_group="Infantry" is_hero="true" level="15" is_female="true" culture="Culture.battania" name="{=8AHT9pt5}Training Master" banner_symbol_mesh_name="test_symbol_a" occupation="Soldier" banner_symbol_color="FF000000" is_hidden_encyclopedia="true">
     <face>
 	  <BodyProperties version="4" age="25" weight="0.5" build="0.5"  key="003FC00149CC3000EE7000EFEFEFFFFF109070F00FFF080E85965E007888000001B776130B02300100000000000000000000000006FC300400000000077C3003"  />

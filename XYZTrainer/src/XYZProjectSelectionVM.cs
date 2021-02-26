@@ -53,15 +53,18 @@ namespace XYZTrainer
             this.NextButtonText = new TextObject("{=Rvr1bcu8}Next", null).ToString();
             this.PrevButtonText = new TextObject("{=WXAaWZVf}Previous", null).ToString();
             this.Projects = new MBBindingList<XYZProjectVM>();
-            for (int i = 0; i < 6; ++i)
-            {
-                XYZProjectVM item = new XYZProjectVM(i, new Action<XYZProjectVM>(this.OnProjectSelection));
-                this.Projects.Add(item);
-            }
+            
+            this.Projects.Add(new XYZProjectVM(
+                "empire",
+                GameTexts.FindText("str_xyz_proj_block_shortname").ToString(),
+                GameTexts.FindText("str_xyz_proj_block_fullname").ToString(),
+                GameTexts.FindText("str_xyz_proj_block_descr").ToString(),
+                "",
+                new Action<XYZProjectVM>(this.OnProjectSelection)));
 
-            this.Title = "XYZ Training Fields";
-            this.Description = "Choose your training project";
-            this.SelectionText = "Training Project";
+            this.Title = GameTexts.FindText("str_xyz_main_title").ToString();
+            this.Description = GameTexts.FindText("str_xyz_main_description").ToString();
+            this.SelectionText = GameTexts.FindText("str_xyz_main_list").ToString();
             RefreshValues();
         }
         private void OnProjectSelection(XYZProjectVM selectedProject)

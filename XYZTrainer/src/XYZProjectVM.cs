@@ -9,59 +9,20 @@ namespace XYZTrainer
 {
 	public class XYZProjectVM : ViewModel
 	{
-		public XYZProjectVM(int id, Action<XYZProjectVM> onSelection)
+		public XYZProjectVM(
+			string spriteCultureID, string thumbnailName, string fullname,
+			string descriptionText, string highlightText, Action<XYZProjectVM> onSelection)
+			
 		{
 			this._onSelection = onSelection;
 			MBTextManager.SetTextVariable("FOCUS_VALUE", 1);
 			MBTextManager.SetTextVariable("EXP_VALUE", 10);
 
-			switch (id)
-            {
-				case 0:
-					this.CultureID = "vlandia";
-					this.ShortenedNameText = "crossbow";
-					this.NameText = "Crossbow Training";
-					this.DescriptionText = "Trains your crossbow technique";
-					this.PositiveEffectText = "";
-					break;
-				case 1:
-					this.CultureID = "sturgia";
-					this.ShortenedNameText = "kicking";
-					this.NameText = "Kick Training";
-					this.DescriptionText = "Trains your kicking technique";
-					this.PositiveEffectText = "";
-					break;
-				case 2:
-					this.CultureID = "empire";
-					this.ShortenedNameText = "blocking";
-					this.NameText = "Blocking Training";
-					this.DescriptionText = "Trains your blocking technique";
-					this.PositiveEffectText = "";
-					break;
-				case 3:
-					this.CultureID = "aserai";
-					this.ShortenedNameText = "javelin";
-					this.NameText = "Javelin Training";
-					this.DescriptionText = "Trains your blocking technique";
-					this.PositiveEffectText = "";
-					break;
-				case 4:
-					this.CultureID = "khuzait";
-					this.ShortenedNameText = "riding";
-					this.NameText = "Riding Training";
-					this.DescriptionText = "Trains your riding technique";
-					this.PositiveEffectText = "";
-					break;
-				case 5:
-					this.CultureID = "battania";
-					this.ShortenedNameText = "bow";
-					this.NameText = "Bow Training";
-					this.DescriptionText = "Trains your bow technique";
-					this.PositiveEffectText = "";
-					break;
-				default:
-					break;
-			}
+			this.CultureID = spriteCultureID;
+			this.ShortenedNameText = thumbnailName;
+			this.NameText = fullname;
+			this.DescriptionText = descriptionText;
+			this.PositiveEffectText = highlightText;
 		}
 
 		public void ExecuteSelectCulture()

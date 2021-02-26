@@ -111,9 +111,6 @@ namespace XYZTrainer
             File.AppendAllText(scoreFile, string.Format(
                 "{0}\t{1}\t{2}\t{3}\t{4}\n", missionTimestamp, fightTimestamp,
                 score, _blockedDamage, _unblockedDamage));
-
-
-
             ClearFightScore();
 		}
 
