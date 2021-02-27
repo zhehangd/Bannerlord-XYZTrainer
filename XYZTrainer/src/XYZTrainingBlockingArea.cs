@@ -121,7 +121,7 @@ namespace XYZTrainer
             _mainCtrl.AddDelayedAction(delegate () {
                 _progress = Progress.Inactive;
                 InformationManager.DisplayMessage(new InformationMessage("Training Field Reset"));
-            }, 10);
+            }, 4);
         }
 
         public void AgentFallBackRise(Agent agent)
