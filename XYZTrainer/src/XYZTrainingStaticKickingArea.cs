@@ -10,28 +10,66 @@ using TaleWorlds.MountAndBlade;
 
 namespace XYZTrainer
 {
-    class XYZTrainingBlockingArea : XYZTrainingArea
+    class XYZTrainingStaticKickingArea : XYZTrainingArea
     {
         public override void Initialize(XYZTrainingMissionController mainCtrl)
         {
+
             this._mainCtrl = mainCtrl;
-            this.FindArea();
-            this.SpawnTrainer();
+
+            this._area_entity = null;
+            List<GameEntity> list = new List<GameEntity>();
+            Mission.Current.Scene.GetEntities(ref list);
+            foreach (GameEntity gameEntity in list)
+            {
+                var area = gameEntity.GetFirstScriptOfType<TutorialArea>();
+                if (area != null && area.TypeOfTraining == TutorialArea.TrainingType.AdvancedMelee)
+                {
+                    this._area_entity = area;
+                    break;
+                }
+            }
+            if (this._area_entity is null)
+            {
+                throw new XYZException("Couldn't find a TutorialArea for blocking training.");
+            }
+
+            // DefineAreaRange
+
+            var mission = Mission.Current;
+            this._trainerInitFrame = MatrixFrame.Identity;
+            GameEntity trainerSpawner = mission.Scene.FindEntityWithTag("spawner_adv_melee_npc_easy");
+            this._trainerInitFrame = trainerSpawner.GetGlobalFrame();
+            this._trainerInitFrame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
+
+            DefineAreaRange(_trainerInitFrame.origin, 100);
+
+            BasicCharacterObject trainerCharacter = Game.Current.ObjectManager.GetObject<BasicCharacterObject>("xyz_kicking_trainer");
+            AgentBuildData agentBuildData = new AgentBuildData(trainerCharacter)
+                .Team(mission.PlayerAllyTeam).InitialFrame(this._trainerInitFrame)
+                .ClothingColor1(mission.PlayerTeam.Color)
+                .ClothingColor2(mission.PlayerTeam.Color2).NoHorses(true)
+                .TroopOrigin(new XYZAgentOrigin(_mainCtrl.MainCombatant, trainerCharacter, false))
+                .Controller(Agent.ControllerType.AI);
+            Agent agent = mission.SpawnAgent(agentBuildData, false, 0);
+            agent.Defensiveness = 100;
+            agent.SetInvulnerable(true);
+            SetAgentWeapon(agent, new string[] { "wooden_sword_t1", "bound_horsemans_kite_shield" });
+            this._trainerAgent = agent;
+
         }
 
+        // Called when Player enters the area
         override protected void ActivateArea()
         {
             this._progress = Progress.Standby;
+            SetAgentWeapon(Agent.Main, new string[] { "wooden_sword_t1", "bound_horsemans_kite_shield" });
         }
 
+        // 
         override protected void DeactivateArea()
         {
-            InformationManager.DisplayMessage(new InformationMessage("Exit Training Area"));
-            Mission.Current.MakeSound(
-                SoundEvent.GetEventIdFromString("event:/mission/tutorial/vo/fighting/player_lose"),
-                this._trainerAgent.GetEyeGlobalPosition(), true, false, -1, -1);
-            Agent.Main.Health = Agent.Main.HealthLimit;
-            ResetTrainer();
+            DeativateTrainer();
             this._progress = Progress.Inactive;
         }
 
@@ -44,11 +82,8 @@ namespace XYZTrainer
             {
                 if ((_trainerAgent.Position - Agent.Main.Position).LengthSquared < 20f)
                 {
-                    InformationManager.DisplayMessage(new InformationMessage("Training Starts"));
                     this._playerHealth = Agent.Main.HealthLimit;
                     this._trainerHealth = this._trainerAgent.HealthLimit;
-                    InformationManager.DisplayMessage(new InformationMessage("Player Health: " + _playerHealth));
-                    InformationManager.DisplayMessage(new InformationMessage("Trainer Health: " + _trainerHealth));
 					ClearFightScore();
                     ActivateTrainer();
                     _progress = Progress.Fight;
@@ -57,27 +92,18 @@ namespace XYZTrainer
             {
                 bool playerLost = this._playerHealth <= 1f;
                 bool playerWon = this._trainerHealth <= 1f;
-
-                if (!playerLost && !playerWon) {return;}
-
-                if (playerLost)
+                if ((_trainerAgent.Position - Agent.Main.Position).LengthSquared < 30f)
                 {
-                    Mission.Current.MakeSound(
-                        SoundEvent.GetEventIdFromString("event:/mission/tutorial/vo/fighting/player_lose"),
-                        this._trainerAgent.GetEyeGlobalPosition(), true, false, -1, -1);
-                    AgentFallBackRise(Agent.Main);
-                    Agent.Main.Health = Agent.Main.HealthLimit;
-                }
-                if (playerWon)
+                    if (_trainerAgent.MovementFlags != Agent.MovementControlFlag.DefendDown)
+                    {
+                        _trainerAgent.MovementFlags = Agent.MovementControlFlag.DefendDown;
+                    }
+                } else
                 {
-                    Mission.Current.MakeSound(
-                        SoundEvent.GetEventIdFromString("event:/mission/tutorial/finish_course"),
-                        Agent.Main.GetEyeGlobalPosition(), true, false, -1, -1);
-                    AgentFallBackRise(_trainerAgent);
+                    ConcludeFight();
+                    DeativateTrainer();
+                    StartCooldown(); // progress = Cooldown 
                 }
-				ConcludeFight();
-                ResetTrainer();
-                StartCooldown(); // progress = Cooldown 
                 return;
             } else if (this._progress == Progress.Cooldown)
             {
@@ -86,8 +112,6 @@ namespace XYZTrainer
             {
 
             }
-
-            //this.CurrentObjectiveTick(new TextObject("{=yflx4LNc}Defeat the trainer!", null));
         }
 		
 		public void ClearFightScore()
@@ -104,7 +128,7 @@ namespace XYZTrainer
 			float avgScore = _totalScore / _numTimes;
 			InformationManager.DisplayMessage(new InformationMessage(String.Format("Score/Average: {0}/{1}", score, avgScore)));
 
-            string scoreFile = _mainCtrl.SaveDirectory + "blocking_score.txt";
+            string scoreFile = _mainCtrl.SaveDirectory + "kicking_score.txt";
             String missionTimestamp = _mainCtrl.MissionTimestamp;
             String fightTimestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
             File.AppendAllText(scoreFile, string.Format(
@@ -116,7 +140,7 @@ namespace XYZTrainer
         public void StartCooldown()
         {
             _progress = Progress.Cooldown;
-            ResetTrainer();
+            DeativateTrainer();
             _mainCtrl.AddDelayedAction(delegate () {
                 _progress = Progress.Inactive;
                 InformationManager.DisplayMessage(new InformationMessage("Training Field Reset"));
@@ -128,29 +152,41 @@ namespace XYZTrainer
             agent.SetActionChannel(0, this.FallBackRiseAnimation, false, 0UL, 0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
         }
 
-        public void ResetTrainer()
+        public void DeativateTrainer()
         {
+            InformationManager.DisplayMessage(new InformationMessage("Deativate Trainer"));
             WorldPosition worldPosition = this._trainerInitFrame.origin.ToWorldPosition();
             _trainerAgent.SetScriptedPositionAndDirection(
                 ref worldPosition, this._trainerInitFrame.rotation.f.AsVec2.RotationInRadians,
                 true, Agent.AIScriptedFrameFlags.None, "");
+            this._trainerAgent.MovementFlags = (Agent.MovementControlFlag)0U;
+
             _trainerAgent.SetTeam(Mission.Current.PlayerAllyTeam, false);
             var comp = _trainerAgent.GetComponent<AgentAIStateFlagComponent>();
             comp.CurrentWatchState = AgentAIStateFlagComponent.WatchState.Patroling;
         }
 
-        public void ActivateTrainer()
+        private void ActivateTrainer()
         {
-            _trainerAgent.DisableScriptedMovement();
+            InformationManager.DisplayMessage(new InformationMessage("Activate Trainer"));
+            WorldPosition worldPosition = this._trainerInitFrame.origin.ToWorldPosition();
+            //_trainerAgent.SetScriptedPositionAndDirection(
+            //    ref worldPosition, this._trainerInitFrame.rotation.f.AsVec2.RotationInRadians,
+            //    true, Agent.AIScriptedFrameFlags.NoAttack, "");
             _trainerAgent.SetTeam(Mission.Current.PlayerEnemyTeam, false);
             var comp = this._trainerAgent.GetComponent<AgentAIStateFlagComponent>();
             comp.CurrentWatchState = AgentAIStateFlagComponent.WatchState.Alarmed;
+        }
+
+        public void DeactivateTrainer()
+        {
         }
 		
         public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon,
                               bool isBlocked, float damage, float movementSpeedDamageModifier, float hitDistance,
                               AgentAttackType attackType, float shotDifficulty, BoneBodyPartType victimHitBodyPart)
         {
+            /*
             if (this._progress != Progress.Fight) { return; }
             if (affectedAgent.Controller == Agent.ControllerType.Player)
             {
@@ -171,52 +207,7 @@ namespace XYZTrainer
             } else
             {
 
-            }
-        }
-
-        public override bool IsPositionInside(Vec3 pos)
-        {
-            return this._area_entity.IsPositionInsideTutorialArea(pos);
-        }
-
-        private void SpawnTrainer()
-        {
-            var mission = Mission.Current;
-            this._trainerInitFrame = MatrixFrame.Identity;
-            GameEntity trainerSpawner = mission.Scene.FindEntityWithTag("spawner_adv_melee_npc_easy");
-            this._trainerInitFrame = trainerSpawner.GetGlobalFrame();
-            this._trainerInitFrame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
-
-            BasicCharacterObject trainerCharacter = Game.Current.ObjectManager.GetObject<BasicCharacterObject>("xyz_blocking_trainer");
-            AgentBuildData agentBuildData = new AgentBuildData(trainerCharacter)
-                .Team(mission.PlayerAllyTeam).InitialFrame(this._trainerInitFrame)
-                .ClothingColor1(mission.PlayerTeam.Color)
-                .ClothingColor2(mission.PlayerTeam.Color2).NoHorses(true)
-                .TroopOrigin(new XYZAgentOrigin(_mainCtrl.MainCombatant, trainerCharacter, false))
-                .Controller(Agent.ControllerType.AI);
-            Agent agent = mission.SpawnAgent(agentBuildData, false, 0);
-            agent.SetInvulnerable(true);
-            this._trainerAgent = agent;
-        }
-
-        private void FindArea()
-        {
-            this._area_entity = null;
-            List<GameEntity> list = new List<GameEntity>();
-            Mission.Current.Scene.GetEntities(ref list);
-            foreach (GameEntity gameEntity in list)
-            {
-                var area = gameEntity.GetFirstScriptOfType<TutorialArea>();
-                if (area != null && area.TypeOfTraining == TutorialArea.TrainingType.AdvancedMelee)
-                {
-                    this._area_entity = area;
-                    break;
-                }
-            }
-            if (this._area_entity is null)
-            {
-                throw new XYZException("Couldn't find a TutorialArea for blocking training.");
-            }
+            }*/
         }
 
         private MatrixFrame _trainerInitFrame;

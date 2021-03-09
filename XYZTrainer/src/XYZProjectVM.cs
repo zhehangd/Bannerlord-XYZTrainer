@@ -11,7 +11,9 @@ namespace XYZTrainer
 	{
 		public XYZProjectVM(
 			string spriteCultureID, string thumbnailName, string fullname,
-			string descriptionText, string highlightText, Action<XYZProjectVM> onSelection)
+			string descriptionText, string highlightText,
+			Action<XYZProjectVM> onSelection,
+			Action onNext)
 			
 		{
 			this._onSelection = onSelection;
@@ -23,6 +25,7 @@ namespace XYZTrainer
 			this.NameText = fullname;
 			this.DescriptionText = descriptionText;
 			this.PositiveEffectText = highlightText;
+			this.OnNext = onNext;
 		}
 
 		public void ExecuteSelectCulture()
@@ -148,6 +151,8 @@ namespace XYZTrainer
 				}
 			}
 		}
+
+		public Action OnNext;
 
 		private readonly Action<XYZProjectVM> _onSelection;
 

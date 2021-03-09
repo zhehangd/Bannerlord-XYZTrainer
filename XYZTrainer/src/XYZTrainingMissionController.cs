@@ -23,6 +23,14 @@ namespace XYZTrainer
     
     class XYZTrainingMissionController : MissionLogic
     {
+      
+        public XYZTrainingMissionController(List<XYZTrainingArea> areas)
+        {
+            foreach (var area in areas)
+            {
+                _trainingAreas.Add(area);
+            }
+        }
 
         public override void OnMissionActivate()
         {
@@ -134,7 +142,11 @@ namespace XYZTrainer
 
         private void InitializeTutorialAreas()
         {
-            this._trainingAreas.Add(new XYZTrainingBlockingArea().Initialize(this));
+
+            foreach (var area in _trainingAreas)
+            {
+                area.Initialize(this);
+            }
 
             int numTrainingAreas = 0;
             List<GameEntity> list = new List<GameEntity>();
@@ -248,9 +260,9 @@ namespace XYZTrainer
         private uint _color1;
         private uint _color2;
 
-        private XYZTrainingBlockingArea _activeTutorialArea;
+        private XYZTrainingArea _activeTutorialArea;
 
-        private List<XYZTrainingBlockingArea> _trainingAreas = new List<XYZTrainingBlockingArea>();
+        private List<XYZTrainingArea> _trainingAreas = new List<XYZTrainingArea>();
 
         private bool _report_tick;
         private float _total_time;
