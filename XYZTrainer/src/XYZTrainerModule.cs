@@ -12,7 +12,7 @@ namespace XYZTrainer
             Module.CurrentModule.AddInitialStateOption
                 (new InitialStateOption("XYZTrainingFields",
                 new TextObject("{=5KQgvmu3Du}XYZ Training Fields"), 3,
-                () => {MBGameManager.StartNewGame(new XYZTrainerGameManager());}, false));
+                () => {MBGameManager.StartNewGame(new XYZTrainerGameManager());}, () => false));
         }
     }
 }
