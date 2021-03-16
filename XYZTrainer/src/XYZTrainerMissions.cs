@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SandBox;
 using SandBox.Source.Missions;
 using SandBox.Source.Missions.Handlers;
@@ -21,10 +22,26 @@ namespace XYZTrainer
 			string scene = "training_field_2";
 			MissionInitializerRecord rec = CreateXYZMissionInitializerRecord(scene);
 			MBDebug.Print("XYZ: MissionState.OpenNew");
+			var list = new List<XYZTrainingArea>{ new XYZTrainingBlockingArea() };
 			Mission createdMission = MissionState.OpenNew("XTZTrainingField", rec,
 				(Mission mission) => new MissionBehaviour[] {
 					new MissionOptionsComponent(),
-					new XYZTrainingMissionController(),
+					new XYZTrainingMissionController(list),
+			}, true, true);
+			return createdMission;
+		}
+
+		[MissionMethod]
+		public static Mission OpenXYZTrainerKickMission()
+		{
+			string scene = "training_field_2";
+			MissionInitializerRecord rec = CreateXYZMissionInitializerRecord(scene);
+			MBDebug.Print("XYZ: MissionState.OpenNew");
+			var list = new List<XYZTrainingArea> { new XYZTrainingStaticKickingArea() };
+			Mission createdMission = MissionState.OpenNew("XTZTrainingField", rec,
+				(Mission mission) => new MissionBehaviour[] {
+					new MissionOptionsComponent(),
+					new XYZTrainingMissionController(list),
 			}, true, true);
 			return createdMission;
 		}

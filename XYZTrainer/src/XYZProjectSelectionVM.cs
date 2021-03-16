@@ -53,15 +53,27 @@ namespace XYZTrainer
             this.NextButtonText = new TextObject("{=Rvr1bcu8}Next", null).ToString();
             this.PrevButtonText = new TextObject("{=WXAaWZVf}Previous", null).ToString();
             this.Projects = new MBBindingList<XYZProjectVM>();
-            
+
+            // vlandia, battania, aserai, khuzait, sturgia, empire
+
             this.Projects.Add(new XYZProjectVM(
                 "empire",
                 GameTexts.FindText("str_xyz_proj_block_shortname").ToString(),
                 GameTexts.FindText("str_xyz_proj_block_fullname").ToString(),
                 GameTexts.FindText("str_xyz_proj_block_descr").ToString(),
                 "",
-                new Action<XYZProjectVM>(this.OnProjectSelection)));
+                new Action<XYZProjectVM>(this.OnProjectSelection),
+                () => { XYZTrainerMissions.OpenXYZTrainerMission(); }));
 
+            this.Projects.Add(new XYZProjectVM(
+                "battania",
+                GameTexts.FindText("str_xyz_proj_kick_shortname").ToString(),
+                GameTexts.FindText("str_xyz_proj_kick_fullname").ToString(),
+                GameTexts.FindText("str_xyz_proj_kick_descr").ToString(),
+                "",
+                new Action<XYZProjectVM>(this.OnProjectSelection),
+                () => {XYZTrainerMissions.OpenXYZTrainerKickMission();}));
+            
             this.Title = GameTexts.FindText("str_xyz_main_title").ToString();
             this.Description = GameTexts.FindText("str_xyz_main_description").ToString();
             this.SelectionText = GameTexts.FindText("str_xyz_main_list").ToString();
@@ -98,8 +110,14 @@ namespace XYZTrainer
 
         public void OnNextStage()
         {
+            if (this.CurrentSelectedProject == null)
+            {
+                MBDebug.Print("No Selection");
+            }
+            
             MBDebug.Print("XYZ: Missions.OpenMission");
-            XYZTrainerMissions.OpenXYZTrainerMission();
+            //XYZTrainerMissions.OpenXYZTrainerMission();
+            this.CurrentSelectedProject.OnNext();
             MBDebug.Print("XYZ: Missions.OpenMission Done");
         }
 
