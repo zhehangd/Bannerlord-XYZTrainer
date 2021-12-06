@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.Engine;
 using TaleWorlds.ModuleManager;
 using TaleWorlds.ObjectSystem;
@@ -181,6 +184,7 @@ namespace XYZTrainer
 			}
 		}
 
+
 		public override void OnDestroy()
 		{
 		}
@@ -188,6 +192,34 @@ namespace XYZTrainer
 		public override void OnStateChanged(GameState oldState)
 		{
 		}
+
+		private void LoadSceneData(string filename)
+        {
+			XmlDocument doc = new XmlDocument();
+			string xml = new StreamReader(filename).ReadToEnd();
+			doc.LoadXml(xml);
+			if (doc.ChildNodes.Count <= 1)
+			{
+				throw new TWXmlLoadException("Incorrect XML document format. XML document must have at least 2 child nodes.");
+			}
+			XmlNode xmlNode = doc.ChildNodes[1];
+			if (xmlNode.Name != "CustomBattleScenes")
+			{
+				throw new TWXmlLoadException("Incorrect XML document format. Root node's name must be CustomBattleScenes.");
+			}
+		}
+
+		public IEnumerable<XYZTrainerSceneData> SceneDataList
+		{
+			get
+			{
+				return this._allSceneDataList;
+			}
+		}
+
+		private List<XYZTrainerSceneData> _allSceneDataList;
+
+		
 
 	}
 	

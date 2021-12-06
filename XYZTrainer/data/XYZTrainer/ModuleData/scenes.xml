@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XYZTrainerSceneDataList>
+  <Scene id="battle_terrain_a" name="{=!}battle_terrain_a (Plain)" terrain="Plain">
+	<TrainingField type="blocking" pos="1,2,3" /> 
+	<TrainingField type="blocking" pos="1,2,3" /> 
+  </Scene>
+  
+
+</XYZTrainerSceneDataList>

@@ -18,7 +18,7 @@ namespace XYZTrainer.UI
     public class XYZProjectSelectionScreen : ScreenBase, IGameStateListener
     {
         private XYZProjectSelectionVM _dataSource;
-        private GauntletMovie _gauntletMovie;
+        private IGauntletMovie _gauntletMovie;
         private GauntletLayer _gauntletLayer;
         private bool _isMovieLoaded;
         private XYZProjectSelectionState _state;
